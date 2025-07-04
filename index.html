@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Travel Budget Planner</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f9ff;
+      padding: 40px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #2c3e50;
+    }
+
+    input, select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 300px;
+    }
+
+    button {
+      background-color: #2980b9;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1c5985;
+    }
+
+    .output {
+      margin-top: 30px;
+      background-color: #e3f2fd;
+      padding: 20px;
+      border-radius: 10px;
+      display: none;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #0d47a1;
+    }
+
+    .contact-info {
+      margin-top: 40px;
+      font-size: 14px;
+      color: #555;
+    }
+
+    .contact-info a {
+      color: #2980b9;
+      text-decoration: none;
+    }
+
+    .contact-info a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🌍 Travel Budget Planner</h1>
+
+  <input type="number" id="budgetInput" placeholder="Enter your budget (INR)" />
+  <br>
+  <select id="countrySelect">
+    <option value="">Choose a country</option>
+    <option value="India">India</option>
+    <option value="Thailand">Thailand</option>
+    <option value="Dubai">Dubai</option>
+    <option value="Switzerland">Switzerland</option>
+    <option value="USA">USA</option>
+    <option value="Australia">Australia</option>
+    <option value="Japan">Japan</option>
+    <option value="France">France</option>
+    <option value="Italy">Italy</option>
+    <option value="Germany">Germany</option>
+    <option value="United Kingdom">United Kingdom</option>
+    <option value="Singapore">Singapore</option>
+    <option value="Malaysia">Malaysia</option>
+    <option value="Canada">Canada</option>
+    <option value="Brazil">Brazil</option>
+    <option value="South Africa">South Africa</option>
+    <option value="Mexico">Mexico</option>
+  </select>
+  <br><br>
+  <button onclick="suggestCountries()">Find Plan</button>
+
+  <div class="output" id="planBox">
+    <p><span class="label">Places to Visit:</span> <span id="places"></span></p>
+    <p><span class="label">Travel Type:</span> <span id="travelType"></span></p>
+    <p><span class="label">Stay Option:</span> <span id="stay"></span></p>
+    <p><span class="label">Food:</span> <span id="food"></span></p>
+    <p><span class="label">Estimated Total Cost:</span> ₹<span id="totalCost"></span></p>
+  </div>
+
+  <div class="contact-info">
+    <p>Created by <strong>Tanishka Waghmare</strong></p>
+    <p>If you have any questions, feel free to <a href="mailto:wtanishka55@gmail.com">contact me via email</a>.</p>
+  </div>
+
+  <script>
+    const travelData = [
+      { country: "India", minBudget: 5000, maxBudget: 25000, places: ["Manali", "Goa", "Jaipur"], travel: "Train / Bus", stay: "3-star Hotels / Hostels", food: "Local Indian Cuisine", avgCost: 15000 },
+      { country: "Thailand", minBudget: 25000, maxBudget: 50000, places: ["Bangkok", "Phuket", "Chiang Mai"], travel: "Low-cost International Flights", stay: "Budget Hotels / Resorts", food: "Street Food & Thai Cuisine", avgCost: 40000 },
+      { country: "Dubai", minBudget: 50000, maxBudget: 100000, places: ["Dubai City", "Desert Safari", "Burj Khalifa"], travel: "Flight", stay: "Mid-range Hotels", food: "Arabian Cuisine & Buffet Meals", avgCost: 75000 },
+      { country: "Switzerland", minBudget: 100000, maxBudget: 300000, places: ["Zurich", "Lucerne", "Interlaken"], travel: "Flight + Swiss Rail Pass", stay: "Premium Hotels", food: "Swiss Delicacies & European Cuisine", avgCost: 200000 },
+      { country: "USA", minBudget: 50000, maxBudget: 150000, places: ["New York", "California", "Las Vegas"], travel: "Flight", stay: "Mid-range Hotels / Airbnb", food: "American Cuisine", avgCost: 100000 },
+      { country: "Australia", minBudget: 60000, maxBudget: 120000, places: ["Sydney", "Melbourne", "Great Barrier Reef"], travel: "Flight", stay: "Mid-range Hotels / Resorts", food: "Australian Cuisine", avgCost: 90000 },
+      { country: "Japan", minBudget: 40000, maxBudget: 80000, places: ["Tokyo", "Kyoto", "Osaka"], travel: "Flight + Train", stay: "Budget Hotels / Ryokan", food: "Sushi & Ramen", avgCost: 60000 },
+      { country: "France", minBudget: 70000, maxBudget: 150000, places: ["Paris", "Nice", "Lyon"], travel: "Flight", stay: "Boutique Hotels", food: "French Cuisine", avgCost: 110000 },
+      { country: "Italy", minBudget: 60000, maxBudget: 120000, places: ["Rome", "Florence", "Venice"], travel: "Flight + Train", stay: "Mid-range Hotels / Airbnb", food: "Italian Cuisine", avgCost: 90000 },
+      { country: "Germany", minBudget: 50000, maxBudget: 100000, places: ["Berlin", "Munich", "Hamburg"], travel: "Flight + Train", stay: "Budget Hotels", food: "German Cuisine", avgCost: 75000 },
+      { country: "United Kingdom", minBudget: 60000, maxBudget: 120000, places: ["London", "Edinburgh", "Manchester"], travel: "Flight", stay: "Mid-range Hotels", food: "British Cuisine", avgCost: 95000 },
+      { country: "Singapore", minBudget: 25000, maxBudget: 60000, places: ["Marina Bay", "Sentosa", "Chinatown"], travel: "Flight + MRT", stay: "Budget Hotels", food: "Singaporean Cuisine", avgCost: 45000 },
+      { country: "Malaysia", minBudget: 15000, maxBudget: 40000, places: ["Kuala Lumpur", "Langkawi", "Penang"], travel: "Flight + Bus", stay: "Budget Hotels", food: "Malaysian Cuisine", avgCost: 30000 },
+      { country: "Canada", minBudget: 80000, maxBudget: 150000, places: ["Toronto", "Vancouver", "Montreal"], travel: "Flight + Train", stay: "Mid-range Hotels", food: "Canadian Cuisine", avgCost: 120000 },
+      { country: "Brazil", minBudget: 25000, maxBudget: 60000, places: ["Rio de Janeiro", "Sao Paulo", "Amazon Rainforest"], travel: "Flight", stay: "Budget Hotels / Hostels", food: "Brazilian Cuisine", avgCost: 40000 },
+      { country: "South Africa", minBudget: 30000, maxBudget: 70000, places: ["Cape Town", "Johannesburg", "Kruger National Park"], travel: "Flight + Car", stay: "Mid-range Hotels", food: "South African Cuisine", avgCost: 55000 },
+      { country: "Mexico", minBudget: 20000, maxBudget: 50000, places: ["Mexico City", "Cancun", "Cozumel"], travel: "Flight", stay: "Budget Hotels / Hostels", food: "Mexican Cuisine", avgCost: 35000 }
+    ];
+
+    function suggestCountries() {
+      const budget = parseInt(document.getElementById("budgetInput").value);
+      const selectedCountry = document.getElementById("countrySelect").value;
+
+      if (isNaN(budget) || budget <= 0) {
+        alert("Please enter a valid budget.");
+        return;
+      }
+
+      if (!selectedCountry) {
+        alert("Please choose a country.");
+        return;
+      }
+
+      const countryData = travelData.find(item => item.country === selectedCountry);
+
+      if (countryData && budget >= countryData.minBudget && budget <= countryData.maxBudget) {
+        document.getElementById("places").innerText = countryData.places.join(", ");
+        document.getElementById("travelType").innerText = countryData.travel;
+        document.getElementById("stay").innerText = countryData.stay;
+        document.getElementById("food").innerText = countryData.food;
+        document.getElementById("totalCost").innerText = countryData.avgCost;
+        document.getElementById("planBox").style.display = "block";
+      } else {
+        alert("Your budget doesn't match the selected country.");
+      }
+    }
+  </script>
+
+</body>
+</html>
